@@ -1,0 +1,117 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Perpustakaan & Sistem Peminjaman",
+    "version": "1.0.0",
+    "description": "Dokumentasi Lengkap REST API Praktikum dan Tugas Mandiri TWS"
+  },
+  "paths": {
+    "/books": {
+      "get": {
+        "summary": "Daftar buku dengan pencarian & pagination",
+        "parameters": [
+          { "name": "title", "in": "query", "schema": { "type": "string" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Berhasil mendapatkan daftar buku" } }
+      },
+      "post": {
+        "summary": "Tambah buku baru",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "author"],
+                "properties": {
+                  "title": { "type": "string" },
+                  "author": { "type": "string" },
+                  "year": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Buku berhasil ditambahkan" },
+          "400": { "description": "Validasi input gagal" }
+        }
+      }
+    },
+    "/books/{id}": {
+      "get": {
+        "summary": "Detail satu buku",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Berhasil" }, "404": { "description": "Tidak Ditemukan" } }
+      },
+      "put": {
+        "summary": "Ubah data buku",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Berhasil diperbarui" }, "400": { "description": "Validasi gagal" } }
+      },
+      "delete": {
+        "summary": "Hapus buku",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Berhasil dihapus" }, "404": { "description": "Buku tidak ditemukan" } }
+      }
+    },
+    "/members": {
+      "get": { "summary": "Daftar seluruh anggota", "responses": { "200": { "description": "Berhasil" } } },
+      "post": {
+        "summary": "Pendaftaran anggota baru",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Anggota terdaftar" }, "400": { "description": "Email duplikat / Format tidak valid" } }
+      }
+    },
+    "/members/{id}/loans": {
+      "get": {
+        "summary": "Riwayat peminjaman buku oleh anggota",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Berhasil" }, "404": { "description": "Anggota tidak ditemukan" } }
+      }
+    },
+    "/loans": {
+      "get": { "summary": "Daftar peminjaman", "responses": { "200": { "description": "Berhasil" } } },
+      "post": {
+        "summary": "Meminjam buku baru",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["book_id", "member_id"],
+                "properties": {
+                  "book_id": { "type": "integer" },
+                  "member_id": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Peminjaman berhasil" }, "400": { "description": "Buku sedang dipinjam" }, "404": { "description": "Buku/Member tidak ada" } }
+      }
+    },
+    "/loans/{id}/return": {
+      "put": {
+        "summary": "Mengembalikan buku yang dipinjam",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Pengembalian berhasil" }, "400": { "description": "Sudah dikembalikan sebelumnya" } }
+      }
+    }
+  }
+}
